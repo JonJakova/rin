@@ -1,0 +1,7 @@
+namespace rin
+{
+    class Emitter
+    {
+        
+    }
+}
