@@ -6,13 +6,14 @@ namespace rin
     {
         static void Main(string[] args)
         {
-            String input = "LET foobar = 123";
+            String input = "+- */";
             var lexer = new Lexer(input);
+            var token = lexer.GetToken();
 
-            while (lexer.Peek() != '\0')
+            while (token._kind != TokenType.EOF)
             {
-                System.Console.WriteLine(lexer.CurChar);
-                lexer.NextChar();
+                System.Console.WriteLine(token._kind);
+                token = lexer.GetToken();
             }
         }
     }
