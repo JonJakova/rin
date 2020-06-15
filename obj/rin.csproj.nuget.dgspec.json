@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\runer\\source\\repos\\rin\\rin.csproj": {}
+    "C:\\Users\\Denaldi\\documents\\jon\\dotnet\\rin\\rin.csproj": {}
   },
   "projects": {
-    "C:\\Users\\runer\\source\\repos\\rin\\rin.csproj": {
+    "C:\\Users\\Denaldi\\documents\\jon\\dotnet\\rin\\rin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\runer\\source\\repos\\rin\\rin.csproj",
+        "projectUniqueName": "C:\\Users\\Denaldi\\documents\\jon\\dotnet\\rin\\rin.csproj",
         "projectName": "rin",
-        "projectPath": "C:\\Users\\runer\\source\\repos\\rin\\rin.csproj",
-        "packagesPath": "C:\\Users\\runer\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\runer\\source\\repos\\rin\\obj\\",
+        "projectPath": "C:\\Users\\Denaldi\\documents\\jon\\dotnet\\rin\\rin.csproj",
+        "packagesPath": "C:\\Users\\Denaldi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Denaldi\\documents\\jon\\dotnet\\rin\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\runer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Denaldi\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -52,7 +55,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -6,7 +6,7 @@ namespace rin
     {
         static void Main(string[] args)
         {
-            String input = "+- */";
+            String input = "IF+-123 foo*THEN/";
             var lexer = new Lexer(input);
             var token = lexer.GetToken();
 

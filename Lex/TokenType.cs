@@ -30,6 +30,9 @@
         LT = 208,
         LTEQ = 209,
         GT = 210,
-        GTEQ = 211
+        GTEQ = 211,
+        
+        //NULL
+        NULL = 999
     }
 }
