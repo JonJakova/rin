@@ -18,8 +18,7 @@ namespace rin
         {
             foreach (var kind in Enum.GetValues(typeof(TokenType)))
             {
-                // System.Console.WriteLine("int is " + (int)kind );
-                // System.Console.WriteLine("string is " + kind.ToString());
+                //Relies on all keyword enum values being 1XX
                 if (kind.ToString() == tokenText && (int)kind >= 100 && (int)kind <200)
                 {
                     return (TokenType)kind;
