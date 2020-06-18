@@ -8,7 +8,6 @@ namespace rin
         static void Main(string[] args)
         {
             System.Console.WriteLine("Rin compiler");
-            System.Console.WriteLine(args.Length);
 
             string input;
 
@@ -26,7 +25,7 @@ namespace rin
             var lexer = new Lexer(input);
             var parser = new Parser(lexer);
 
-            // parser
+            parser.Program(); //Start the parser
             System.Console.WriteLine("Parser completed");
         }
     }
