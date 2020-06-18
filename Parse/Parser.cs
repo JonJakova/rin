@@ -95,6 +95,23 @@ namespace rin
                 Match(TokenType.ENDIF);
             }
 
+            //
+            else if (CheckToken(TokenType.WHILE))
+            {
+                System.Console.WriteLine("STATEMENT-WHILE");
+                NextToken();
+                // Comparison();
+
+                Match(TokenType.REPEAT);
+                Nl();
+
+                //
+                while (!CheckToken(TokenType.ENDWHILE))
+                {
+                    
+                }
+            }
+
             // Newline
             Nl();
         }
