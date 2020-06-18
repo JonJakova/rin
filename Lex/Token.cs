@@ -5,13 +5,13 @@ namespace rin
     //Token contains the original text and the type of token.
     class Token
     {
-        public string _text;
-        public TokenType _kind;
+        private string _text;
+        public TokenType kind;
 
         public Token(string tokenText, TokenType tokenKind)
         {
             _text = tokenText;
-            _kind = tokenKind;
+            kind = tokenKind;
         }
 
         public static TokenType checkIfKeyword(string tokenText)

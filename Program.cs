@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace rin
 {
@@ -6,15 +7,27 @@ namespace rin
     {
         static void Main(string[] args)
         {
-            String input = "IF+-123 foo*THEN/";
-            var lexer = new Lexer(input);
-            var token = lexer.GetToken();
+            System.Console.WriteLine("Rin compiler");
+            System.Console.WriteLine(args.Length);
 
-            while (token._kind != TokenType.EOF)
+            string input;
+
+            if (args.Length != 1)
             {
-                System.Console.WriteLine(token._kind);
-                token = lexer.GetToken();
+                throw new ArgumentNullException("Enter file path");
             }
+
+            using (StreamReader reader = new StreamReader(args[0]))
+            {
+                input = reader.ReadToEnd();
+            }
+
+            //Initialize the lexer and parser
+            var lexer = new Lexer(input);
+            var parser = new Parser(lexer);
+
+            // parser
+            System.Console.WriteLine("Parser completed");
         }
     }
 }
