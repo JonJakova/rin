@@ -73,7 +73,7 @@ namespace rin
                 else
                 {
                     // Expect an expression
-                    // Expression();
+                    Expression();
                 }
             }
 
@@ -95,7 +95,7 @@ namespace rin
                 Match(TokenType.ENDIF);
             }
 
-            //
+            // "WHILE" comparison "REPEAT" {statement} "ENDWHILE"
             else if (CheckToken(TokenType.WHILE))
             {
                 System.Console.WriteLine("STATEMENT-WHILE");
@@ -105,15 +105,148 @@ namespace rin
                 Match(TokenType.REPEAT);
                 Nl();
 
-                //
+                // Zero or more statements in the loop body
                 while (!CheckToken(TokenType.ENDWHILE))
                 {
-                    
+                    Statement();
                 }
+
+                Match(TokenType.ENDWHILE);
+            }
+
+            // "LABEL" indet
+            else if (CheckToken(TokenType.LABEL))
+            {
+                System.Console.WriteLine("STATEMENT-LABEL");
+                NextToken();
+                Match(TokenType.IDENT);
+            }
+
+            // "GOTO" ident
+            else if (CheckToken(TokenType.GOTO))
+            {
+                System.Console.WriteLine("STATEMENT-IDENT");
+                NextToken();
+                Match(TokenType.IDENT);
+            }
+
+            // "LET" ident "=" expression
+            else if (CheckToken(TokenType.LET))
+            {
+                System.Console.WriteLine("STATEMENT-LET");
+                NextToken();
+                Match(TokenType.IDENT);
+                Match(TokenType.EQ);
+                Expression();
+            }
+
+            // "INPUT" ident
+            else if (CheckToken(TokenType.INPUT))
+            {
+                System.Console.WriteLine("STATEMENT-INPUT");
+                NextToken();
+                Match(TokenType.IDENT);
+            }
+
+            // This is not a valid statement. Error!
+            else
+            {
+                Abort("Invalid statement at "+ _curToken.text + " (" + _curToken.kind.ToString() + ")");
             }
 
             // Newline
             Nl();
+        }
+
+        // comparison ::= expression (("==" | "!=" | ">" | ">=" | "<" | "<=") expression)+
+        public void Comparison()
+        {
+            System.Console.WriteLine("COMPARISON");
+
+            Expression();
+            // Must be at least one comparison operator and another expression
+            if (IsComparisonOperator())
+            {
+                NextToken();
+                Expression();
+            }
+
+            // Can have 0 or more comparison operator and expressions
+            while (IsComparisonOperator())
+            {
+                NextToken();
+                Expression();
+            }
+        }
+
+        public bool IsComparisonOperator()
+        {
+            return CheckToken(TokenType.GT) 
+            || CheckToken(TokenType.GTEQ)
+            || CheckToken(TokenType.LT)
+            || CheckToken(TokenType.LTEQ)
+            || CheckToken(TokenType.EQEQ)
+            || CheckToken(TokenType.NOTEQ);
+        }
+
+        // expression ::= term {( "-" | "+" ) term}
+        public void Expression()
+        {
+            System.Console.WriteLine("EXPRESSION");
+
+            // Term();
+            // Can have 0 or more +/- and expressions
+            while (CheckToken(TokenType.PLUS) || CheckToken(TokenType.MINUS))
+            {
+                NextToken();
+                // Term();
+            }
+        }
+
+        // term ::= unary {( "/" | "*" ) unary}
+        public void Term()
+        {
+            System.Console.WriteLine("TERM");
+
+            Unary();
+            // Can have 0 or more *// and expressions
+            while (CheckToken(TokenType.ASTERISK) || CheckToken(TokenType.SLASH))
+            {
+                NextToken();
+                Unary();
+            }
+        }
+
+        // unary ::= ["+" | "-"] primary
+        public void Unary()
+        {
+            System.Console.WriteLine("UNARY");
+            
+            // Optional unary +/-
+            if (CheckToken(TokenType.PLUS) || CheckToken(TokenType.MINUS))
+            {
+                NextToken();
+            }
+            Primary();
+        }
+
+        // primary ::= number | ident
+        public void Primary()
+        {
+            System.Console.WriteLine("PRIMARY (" + _curToken.text + ")");
+
+            if (CheckToken(TokenType.NUMBER))
+            {
+                NextToken();
+            }
+            else if (CheckToken(TokenType.INPUT))
+            {
+                NextToken();
+            }
+            else
+            {
+                Abort("Unexpected token at "+ _curToken.text);
+            }
         }
 
         public void Nl()
@@ -134,6 +267,12 @@ namespace rin
         public void Program()
         {
             System.Console.WriteLine("PROGRAM");
+
+            // Since some newlines are required in our grammar, need to skip the excess
+            while (CheckToken(TokenType.NEWLINE))
+            {
+                NextToken();
+            }
 
             // Parse all the statements in the program
             while (!CheckToken(TokenType.EOF))
