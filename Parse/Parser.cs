@@ -82,7 +82,7 @@ namespace rin
             {
                 System.Console.WriteLine("STATEMENT-IF");
                 NextToken();
-                // Comparison();
+                Comparison();
 
                 Match(TokenType.THEN);
                 Nl();
@@ -100,7 +100,7 @@ namespace rin
             {
                 System.Console.WriteLine("STATEMENT-WHILE");
                 NextToken();
-                // Comparison();
+                Comparison();
 
                 Match(TokenType.REPEAT);
                 Nl();
@@ -194,12 +194,12 @@ namespace rin
         {
             System.Console.WriteLine("EXPRESSION");
 
-            // Term();
+            Term();
             // Can have 0 or more +/- and expressions
             while (CheckToken(TokenType.PLUS) || CheckToken(TokenType.MINUS))
             {
                 NextToken();
-                // Term();
+                Term();
             }
         }
 
@@ -239,7 +239,7 @@ namespace rin
             {
                 NextToken();
             }
-            else if (CheckToken(TokenType.INPUT))
+            else if (CheckToken(TokenType.IDENT))
             {
                 NextToken();
             }
