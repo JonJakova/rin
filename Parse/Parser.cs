@@ -1,17 +1,26 @@
+using System.Collections.Generic;
 using System.Data;
 
 namespace rin
 {
     //Parser object keeps track of current token and checks if the code matches the grammar
-    class Parser
+    partial class Parser
     {
         private readonly Lexer _lex;
         private Token _curToken;
         private Token _peekToken;
+        private List<string> _symbols; // Variables declared so far
+        private List<string> _labelsDeclared; // Labels declared so far
+        private List<string> _labelsGotoed; // Labels goto'ed so far
 
         public Parser(Lexer lex)
         {
             this._lex = lex;
+
+            _symbols = new List<string>();
+            _labelsDeclared = new List<string>();
+            _labelsGotoed = new List<string>();
+
             this._curToken = null;
             this._peekToken = null;
             NextToken();
@@ -51,111 +60,6 @@ namespace rin
         public void Abort(string message)
         {
             throw new InvalidExpressionException("Error. " + message);
-        }
-
-        //Will got to partial class
-        // One of the following statements...
-        public void Statement()
-        {
-            // Check the first token to see what kind of statement this is.
-
-            // "PRINT" (expression | string)
-            if (CheckToken(TokenType.PRINT))
-            {
-                System.Console.WriteLine("STATEMENT-PRINT");
-                NextToken();
-
-                if (CheckToken(TokenType.STRING))
-                {
-                    // Simple string
-                    NextToken();
-                }
-                else
-                {
-                    // Expect an expression
-                    Expression();
-                }
-            }
-
-            // "IF" comparison "THEN" {statement} "ENDIF"
-            else if (CheckToken(TokenType.IF))
-            {
-                System.Console.WriteLine("STATEMENT-IF");
-                NextToken();
-                Comparison();
-
-                Match(TokenType.THEN);
-                Nl();
-
-                while (!CheckToken(TokenType.ENDIF))
-                {
-                    Statement();
-                }
-
-                Match(TokenType.ENDIF);
-            }
-
-            // "WHILE" comparison "REPEAT" {statement} "ENDWHILE"
-            else if (CheckToken(TokenType.WHILE))
-            {
-                System.Console.WriteLine("STATEMENT-WHILE");
-                NextToken();
-                Comparison();
-
-                Match(TokenType.REPEAT);
-                Nl();
-
-                // Zero or more statements in the loop body
-                while (!CheckToken(TokenType.ENDWHILE))
-                {
-                    Statement();
-                }
-
-                Match(TokenType.ENDWHILE);
-            }
-
-            // "LABEL" indet
-            else if (CheckToken(TokenType.LABEL))
-            {
-                System.Console.WriteLine("STATEMENT-LABEL");
-                NextToken();
-                Match(TokenType.IDENT);
-            }
-
-            // "GOTO" ident
-            else if (CheckToken(TokenType.GOTO))
-            {
-                System.Console.WriteLine("STATEMENT-IDENT");
-                NextToken();
-                Match(TokenType.IDENT);
-            }
-
-            // "LET" ident "=" expression
-            else if (CheckToken(TokenType.LET))
-            {
-                System.Console.WriteLine("STATEMENT-LET");
-                NextToken();
-                Match(TokenType.IDENT);
-                Match(TokenType.EQ);
-                Expression();
-            }
-
-            // "INPUT" ident
-            else if (CheckToken(TokenType.INPUT))
-            {
-                System.Console.WriteLine("STATEMENT-INPUT");
-                NextToken();
-                Match(TokenType.IDENT);
-            }
-
-            // This is not a valid statement. Error!
-            else
-            {
-                Abort("Invalid statement at "+ _curToken.text + " (" + _curToken.kind.ToString() + ")");
-            }
-
-            // Newline
-            Nl();
         }
 
         // comparison ::= expression (("==" | "!=" | ">" | ">=" | "<" | "<=") expression)+
@@ -241,10 +145,16 @@ namespace rin
             }
             else if (CheckToken(TokenType.IDENT))
             {
+                // Ensure the variable already exists
+                if (!_symbols.Contains(_curToken.text))
+                {
+                    Abort("Referencing variable before assignment: " + _curToken.text);
+                }
                 NextToken();
             }
             else
             {
+                // Error
                 Abort("Unexpected token at "+ _curToken.text);
             }
         }
@@ -278,6 +188,15 @@ namespace rin
             while (!CheckToken(TokenType.EOF))
             {
                 Statement();
+            }
+
+            //Check that each label referenced in a GOTO is declared
+            foreach (var label in _labelsGotoed)
+            {
+                if (!_labelsDeclared.Contains(label))
+                {
+                    Abort("Attempting to GOTO to undeclared label: " + label);
+                }
             }
         }
     }
