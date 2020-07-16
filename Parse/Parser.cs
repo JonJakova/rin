@@ -7,15 +7,17 @@ namespace rin
     partial class Parser
     {
         private readonly Lexer _lex;
+        private readonly Emitter _emit;
         private Token _curToken;
         private Token _peekToken;
         private List<string> _symbols; // Variables declared so far
         private List<string> _labelsDeclared; // Labels declared so far
         private List<string> _labelsGotoed; // Labels goto'ed so far
 
-        public Parser(Lexer lex)
+        public Parser(Lexer lex, Emitter emit)
         {
             this._lex = lex;
+            this._emit = emit;
 
             _symbols = new List<string>();
             _labelsDeclared = new List<string>();
@@ -24,7 +26,7 @@ namespace rin
             this._curToken = null;
             this._peekToken = null;
             NextToken();
-            NextToken();
+            NextToken(); // Call this twice to initialize current and peek.
         }
 
         //Return true if the current token matches
@@ -65,12 +67,11 @@ namespace rin
         // comparison ::= expression (("==" | "!=" | ">" | ">=" | "<" | "<=") expression)+
         public void Comparison()
         {
-            System.Console.WriteLine("COMPARISON");
-
             Expression();
             // Must be at least one comparison operator and another expression
             if (IsComparisonOperator())
             {
+                _emit.Emit(_curToken.text);
                 NextToken();
                 Expression();
             }
@@ -78,6 +79,7 @@ namespace rin
             // Can have 0 or more comparison operator and expressions
             while (IsComparisonOperator())
             {
+                _emit.Emit(_curToken.text);
                 NextToken();
                 Expression();
             }
@@ -96,12 +98,11 @@ namespace rin
         // expression ::= term {( "-" | "+" ) term}
         public void Expression()
         {
-            System.Console.WriteLine("EXPRESSION");
-
             Term();
             // Can have 0 or more +/- and expressions
             while (CheckToken(TokenType.PLUS) || CheckToken(TokenType.MINUS))
             {
+                _emit.Emit(_curToken.text);
                 NextToken();
                 Term();
             }
@@ -110,12 +111,11 @@ namespace rin
         // term ::= unary {( "/" | "*" ) unary}
         public void Term()
         {
-            System.Console.WriteLine("TERM");
-
             Unary();
             // Can have 0 or more *// and expressions
             while (CheckToken(TokenType.ASTERISK) || CheckToken(TokenType.SLASH))
             {
+                _emit.Emit(_curToken.text);
                 NextToken();
                 Unary();
             }
@@ -124,11 +124,10 @@ namespace rin
         // unary ::= ["+" | "-"] primary
         public void Unary()
         {
-            System.Console.WriteLine("UNARY");
-            
             // Optional unary +/-
             if (CheckToken(TokenType.PLUS) || CheckToken(TokenType.MINUS))
             {
+                _emit.Emit(_curToken.text);
                 NextToken();
             }
             Primary();
@@ -137,10 +136,9 @@ namespace rin
         // primary ::= number | ident
         public void Primary()
         {
-            System.Console.WriteLine("PRIMARY (" + _curToken.text + ")");
-
             if (CheckToken(TokenType.NUMBER))
             {
+                _emit.Emit(_curToken.text);
                 NextToken();
             }
             else if (CheckToken(TokenType.IDENT))
@@ -150,6 +148,8 @@ namespace rin
                 {
                     Abort("Referencing variable before assignment: " + _curToken.text);
                 }
+
+                _emit.Emit(_curToken.text);
                 NextToken();
             }
             else
@@ -161,8 +161,6 @@ namespace rin
 
         public void Nl()
         {
-            System.Console.WriteLine("NEWLINE");
-
             // Require at least one newline
             Match(TokenType.NEWLINE);
             // But we will allow extra newlines too
@@ -176,7 +174,8 @@ namespace rin
         // program ::= {statement}
         public void Program()
         {
-            System.Console.WriteLine("PROGRAM");
+            _emit.HeaderLine("#include <stdio.h>");
+            _emit.HeaderLine("int main(void){");
 
             // Since some newlines are required in our grammar, need to skip the excess
             while (CheckToken(TokenType.NEWLINE))
@@ -189,6 +188,10 @@ namespace rin
             {
                 Statement();
             }
+
+            // Wraps things up
+            _emit.EmitLine("return 0;");
+            _emit.EmitLine("}");
 
             //Check that each label referenced in a GOTO is declared
             foreach (var label in _labelsGotoed)

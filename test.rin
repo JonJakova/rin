@@ -1,0 +1,13 @@
+PRINT "Enter two numbers!"
+INPUT a
+INPUT b
+IF a>b THEN
+PRINT a
+PRINT "is bigger than "
+PRINT b
+ENDIF
+IF a<b THEN
+PRINT b
+PRINT "is bigger than "
+PRINT a
+ENDIF

@@ -102,7 +102,7 @@ namespace rin
                     NextChar();
                 }
 
-                _substringLength = CurPos - _startPos +1;
+                _substringLength = CurPos - _startPos;
                 _tokText = Source.Substring(_startPos, _substringLength); // Get the substring
                 _token = new Token(_tokText, TokenType.STRING);
             }

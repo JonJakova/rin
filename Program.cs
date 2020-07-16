@@ -23,10 +23,12 @@ namespace rin
 
             //Initialize the lexer and parser
             var lexer = new Lexer(input);
-            var parser = new Parser(lexer);
+            var emitter = new Emitter("out.c");
+            var parser = new Parser(lexer, emitter);
 
-            parser.Program(); //Start the parser
-            System.Console.WriteLine("Parser completed");
+            parser.Program(); // Start the parser
+            emitter.WriteFile(); // Write the output to file
+            System.Console.WriteLine("Compiling completed");
         }
     }
 }

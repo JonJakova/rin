@@ -1,7 +1,0 @@
-namespace rin
-{
-    class Emitter
-    {
-        
-    }
-}
